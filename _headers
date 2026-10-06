@@ -1,0 +1,11 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+# The Content-Security-Policy lives in each page, because the structured-data
+# hash is different on every page. A second policy here would block that data.
+# Turn on Strict-Transport-Security only after the live site is serving HTTPS.

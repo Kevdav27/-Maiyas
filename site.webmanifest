@@ -1,0 +1,25 @@
+{
+  "name": "Maiya's Gardening Renovation",
+  "short_name": "Maiya's",
+  "description": "Local garden care across North West England.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "lang": "en-GB",
+  "background_color": "#F5EFE6",
+  "theme_color": "#315B35",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "images/logo.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg",
+      "purpose": "any"
+    }
+  ]
+}

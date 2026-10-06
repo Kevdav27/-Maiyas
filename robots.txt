@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Replace the domain with the live site before launch, then submit this file in Google Search Console.
+Sitemap: https://maiyasgardening.co.uk/sitemap.xml

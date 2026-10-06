@@ -1,0 +1,2249 @@
+/* Maiya's Gardening Renovation — layout and theme
+   ------------------------------------------------
+   Structure of this file:
+     1. Fonts and design tokens
+     2. Base elements
+     3. Layout helpers (container, section, bands)
+     4. Header and navigation
+     5. Buttons and small components
+     6. Home page: hero, facts, bento, timeline, collage, areas, reviews, CTA
+     7. Inner pages: page hero, service rows, gallery, contact, forms
+     8. Footer and floating contact
+     9. Responsive steps, motion and print
+
+   The palette is fixed by the brand. Gold is used for rules, numerals and
+   large type only: as small text on cream it fails contrast, so small gold
+   labels use --gold-ink instead.
+   Fraunces and Outfit are SIL Open Font License Latin subsets, self-hosted so
+   the page never calls a third-party font server. */
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/fraunces-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Outfit";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("../fonts/outfit-latin.woff2") format("woff2");
+}
+
+/* ---------------------------------------------------------------- 1. tokens */
+
+:root {
+  --burgundy: #a23f3b;
+  --burgundy-deep: #7c2e2b;
+  --green: #315b35;
+  --green-deep: #234028;
+  --green-ink: #172b1b;
+  --ink: #1e291e;
+  --muted: #3f4c40;
+  --olive: #8d9b38;
+  --gold: #c99a3d;
+  --gold-ink: #8a6420;
+  --cream: #f5efe6;
+  --paper: #fffbf6;
+  --line: rgba(49, 91, 53, 0.16);
+  --line-gold: rgba(201, 154, 61, 0.45);
+  --shadow: 0 18px 40px rgba(30, 41, 30, 0.08);
+  --shadow-lift: 0 26px 60px rgba(23, 43, 27, 0.22);
+  --radius: 1.4rem;
+  --radius-lg: 2rem;
+  --font-display: "Fraunces", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Outfit", "Segoe UI", sans-serif;
+  --header-offset: 8.6rem;
+  --max: 75rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------------ 2. base */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  line-height: 1.62;
+  color: var(--ink);
+  background: var(--cream);
+}
+
+img,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  display: block;
+}
+
+a {
+  color: var(--burgundy-deep);
+}
+
+a:hover {
+  color: var(--burgundy);
+}
+
+:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 560;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--green-deep);
+  margin: 0 0 0.6rem;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 5.4vw, 4.4rem);
+}
+
+h2 {
+  font-size: clamp(1.85rem, 3.2vw, 2.7rem);
+}
+
+h3 {
+  font-size: 1.32rem;
+}
+
+h1 em,
+h2 em {
+  font-style: italic;
+  color: var(--burgundy);
+}
+
+.hero h1 em,
+.page-hero h1 em,
+.cta h2 em {
+  color: var(--gold);
+}
+
+p {
+  margin: 0 0 0.9rem;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+/* Anchor targets stop below the sticky header instead of hiding under it. */
+:target,
+h2,
+h3,
+[id] {
+  scroll-margin-top: var(--header-offset);
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 80;
+  transform: translateY(-150%);
+  background: var(--green);
+  color: var(--cream);
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  display: inline-block;
+  vertical-align: -0.18rem;
+  flex: 0 0 auto;
+}
+
+/* ---------------------------------------------------------------- 3. layout */
+
+.container {
+  width: min(var(--max), calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+.container--narrow {
+  width: min(46rem, calc(100% - 2.5rem));
+}
+
+.section {
+  padding: clamp(3rem, 6vw, 5.5rem) 0;
+}
+
+.section--tight {
+  padding-top: 0;
+}
+
+.section--flush {
+  padding-bottom: 0;
+}
+
+/* Eyebrow label with a short gold dash, used above every section heading. */
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--burgundy-deep);
+}
+
+.kicker::before {
+  content: "";
+  width: 1.7rem;
+  height: 2px;
+  background: var(--gold);
+  flex: none;
+}
+
+.kicker--on-dark {
+  color: var(--gold);
+}
+
+.lede {
+  font-size: 1.15rem;
+  max-width: 42rem;
+  color: var(--muted);
+}
+
+.rule {
+  width: 4.5rem;
+  height: 3px;
+  margin: 1rem 0 1.1rem;
+  border: 0;
+  background: linear-gradient(90deg, var(--gold), var(--olive));
+}
+
+/* Section headings: title on the left, optional link on the right. */
+.section__head {
+  max-width: 44rem;
+  margin-bottom: clamp(1.6rem, 3vw, 2.6rem);
+}
+
+.section__head--split {
+  max-width: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.section__head--split > div {
+  max-width: 40rem;
+}
+
+.band--green {
+  background: var(--green);
+  color: var(--cream);
+}
+
+.band--burgundy {
+  background: var(--burgundy-deep);
+  color: var(--cream);
+}
+
+.band--paper {
+  background: var(--paper);
+  border-block: 1px solid var(--line);
+}
+
+.band--green h2,
+.band--green h3,
+.band--burgundy h2,
+.band--burgundy h3 {
+  color: var(--cream);
+}
+
+.band--green p,
+.band--burgundy p,
+.band--green .lede,
+.band--burgundy .lede {
+  color: rgba(245, 239, 230, 0.92);
+}
+
+.band--green a:focus-visible,
+.band--burgundy a:focus-visible,
+.utility-bar a:focus-visible,
+.site-footer a:focus-visible,
+.mobile-dock a:focus-visible,
+.quick-contact a:focus-visible,
+.btn--primary:focus-visible,
+.hero a:focus-visible,
+.page-hero a:focus-visible,
+.cta a:focus-visible {
+  outline-color: var(--cream);
+}
+
+.prose {
+  max-width: 44rem;
+}
+
+.prose h2 {
+  margin-top: 1.8rem;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.2rem 0;
+}
+
+/* ---------------------------------------------------------------- 4. header */
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(245, 239, 230, 0.93);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 var(--line), 0 10px 30px rgba(30, 41, 30, 0.06);
+}
+
+.utility-bar {
+  background: var(--green-deep);
+  color: var(--cream);
+}
+
+.utility-bar a {
+  color: var(--cream);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.utility-bar a:hover {
+  color: var(--gold);
+}
+
+.utility-bar__inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  min-height: 2.4rem;
+  font-size: 0.9rem;
+}
+
+.utility-bar p {
+  margin: 0;
+}
+
+/* One header row: brand, then the page links, then the quote button. */
+.site-header__inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem 1.6rem;
+  min-height: 5.1rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.brand__mark {
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 42%;
+  background: #111;
+  border: 2px solid var(--gold);
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.brand__name {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--burgundy);
+}
+
+.brand__tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.site-nav {
+  min-width: 0;
+  justify-self: end;
+}
+
+.site-nav__list {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.site-nav__list::-webkit-scrollbar {
+  display: none;
+}
+
+.site-nav a {
+  display: block;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  color: var(--green-deep);
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.site-nav a:hover {
+  background: rgba(49, 91, 53, 0.09);
+  color: var(--green-deep);
+}
+
+/* The current page reads as a filled pill rather than a colour change alone. */
+.site-nav a[aria-current="page"] {
+  background: var(--burgundy);
+  color: #fff;
+}
+
+.nav-cta {
+  justify-self: end;
+  min-height: 2.7rem;
+  padding: 0.5rem 1.05rem;
+}
+
+/* Full-screen menu for small screens. Hidden on desktop so the text
+   links stay the primary navigation. Native <details> needs no script. */
+.menu-sheet {
+  display: none;
+  justify-self: end;
+}
+
+.menu-sheet__toggle {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  background: var(--paper);
+  color: var(--green-deep);
+  cursor: pointer;
+  position: relative;
+  z-index: 70;
+}
+
+.menu-sheet__toggle::-webkit-details-marker,
+.menu-sheet__toggle::marker {
+  display: none;
+  content: "";
+}
+
+.menu-sheet__icon,
+.menu-sheet__icon::before,
+.menu-sheet__icon::after {
+  display: block;
+  width: 1.15rem;
+  height: 2px;
+  background: currentColor;
+  border-radius: 99px;
+}
+
+.menu-sheet__icon {
+  position: relative;
+}
+
+.menu-sheet__icon::before,
+.menu-sheet__icon::after {
+  content: "";
+  position: absolute;
+  left: 0;
+}
+
+.menu-sheet__icon::before {
+  top: -6px;
+}
+
+.menu-sheet__icon::after {
+  top: 6px;
+}
+
+.menu-sheet[open] .menu-sheet__toggle {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
+.menu-sheet[open] .menu-sheet__icon {
+  background: transparent;
+}
+
+.menu-sheet[open] .menu-sheet__icon::before {
+  top: 0;
+  transform: rotate(45deg);
+}
+
+.menu-sheet[open] .menu-sheet__icon::after {
+  top: 0;
+  transform: rotate(-45deg);
+}
+
+.menu-sheet__panel {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1.6rem;
+  padding: 6.2rem 1.35rem calc(6.4rem + env(safe-area-inset-bottom));
+  background:
+    linear-gradient(180deg, rgba(23, 43, 27, 0.2), rgba(23, 43, 27, 0.55) 28%, var(--green-ink) 58%),
+    var(--green-ink);
+  color: var(--cream);
+  overflow-y: auto;
+}
+
+.menu-sheet__kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.menu-sheet__nav ul {
+  list-style: none;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.menu-sheet__nav a {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.05rem, 9vw, 2.85rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+  text-decoration: none;
+  padding: 0.15rem 0;
+}
+
+.menu-sheet__nav a[aria-current="page"] {
+  color: var(--gold);
+}
+
+.menu-sheet__foot {
+  display: grid;
+  gap: 0.7rem;
+  padding-top: 0.4rem;
+}
+
+.menu-sheet__foot p {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.menu-sheet__foot a {
+  color: var(--cream);
+}
+
+/* --------------------------------------------------------- 5. buttons, bits */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0.65rem 1.3rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  text-decoration: none;
+  font: inherit;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background: var(--burgundy);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--burgundy-deep);
+  color: #fff;
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.btn--secondary:hover {
+  background: var(--green);
+  color: var(--cream);
+}
+
+.btn--gold {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.btn--gold:hover {
+  background: #b8882e;
+  color: var(--ink);
+}
+
+/* On dark bands an outlined button needs cream, not green, edges. */
+.band--green .btn--secondary,
+.band--burgundy .btn--secondary,
+.hero .btn--secondary,
+.page-hero .btn--secondary,
+.cta .btn--secondary {
+  color: var(--cream);
+  border-color: rgba(245, 239, 230, 0.7);
+}
+
+.band--green .btn--secondary:hover,
+.band--burgundy .btn--secondary:hover,
+.hero .btn--secondary:hover,
+.page-hero .btn--secondary:hover,
+.cta .btn--secondary:hover {
+  background: var(--cream);
+  color: var(--green-deep);
+}
+
+.card,
+.info-card,
+.form-card,
+.review {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.card,
+.info-card {
+  padding: 1.35rem 1.3rem 1.4rem;
+}
+
+.card-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.card h3 {
+  margin-bottom: 0.4rem;
+}
+
+.card p:last-child {
+  margin-bottom: 0;
+}
+
+.checklist {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+}
+
+.checklist li {
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.checklist li::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: var(--olive);
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+}
+
+/* ------------------------------------------------------------- 6. home page */
+
+/* Photograph hero. The image is a real <img> so it can be preloaded and
+   indexed; the scrim is a pseudo-element so the text keeps its contrast. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: min(38rem, 78vh);
+  padding: clamp(3rem, 9vw, 6.5rem) 0 0;
+  background: var(--green-ink);
+  color: var(--cream);
+  overflow: hidden;
+}
+
+.hero__bg,
+.page-hero__bg,
+.cta__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+.hero::after,
+.page-hero::after,
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(100deg, rgba(23, 43, 27, 0.95) 0%, rgba(23, 43, 27, 0.86) 45%, rgba(23, 43, 27, 0.5) 72%, rgba(23, 43, 27, 0.32) 100%),
+    linear-gradient(to top, rgba(23, 43, 27, 0.88), transparent 55%);
+}
+
+.hero__inner {
+  position: relative;
+  padding-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.hero__copy {
+  max-width: 38rem;
+}
+
+.hero h1,
+.page-hero h1,
+.cta h2 {
+  color: var(--cream);
+}
+
+.hero .lede {
+  color: rgba(245, 239, 230, 0.93);
+  font-size: 1.2rem;
+}
+
+.hero__badge {
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 42%;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 8px rgba(201, 154, 61, 0.18);
+  margin-bottom: 1.4rem;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin: 1.4rem 0 1rem;
+}
+
+.hero__note {
+  margin: 0;
+  color: rgba(245, 239, 230, 0.9);
+}
+
+.hero__note a {
+  color: var(--cream);
+  font-weight: 600;
+}
+
+/* Four promises sit on the hero itself, so the first screen carries them
+   without another full-width band underneath. */
+.hero__facts {
+  position: relative;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  margin-top: clamp(2rem, 5vw, 3.4rem);
+  background: rgba(245, 239, 230, 0.22);
+  border-top: 1px solid rgba(245, 239, 230, 0.22);
+}
+
+.fact {
+  background: rgba(23, 43, 27, 0.55);
+  padding: 1.1rem 1.2rem 1.2rem;
+}
+
+.fact__label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--gold);
+  margin-bottom: 0.15rem;
+}
+
+.fact p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(245, 239, 230, 0.88);
+}
+
+/* Bento grid of services: one tall feature tile, one wide tile, four small.
+   grid-auto-flow: dense keeps the shape tidy if a tile is ever removed. */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 12.5rem;
+  grid-auto-flow: dense;
+  gap: 0.9rem;
+}
+
+.bento__item {
+  position: relative;
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--green-ink);
+  color: var(--cream);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+
+.bento__item--feature {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.bento__item--wide {
+  grid-column: span 2;
+}
+
+.bento__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bento__body {
+  position: relative;
+  width: 100%;
+  padding: 3.5rem 1.15rem 1.1rem;
+  background: linear-gradient(transparent, rgba(20, 33, 22, 0.9) 62%);
+}
+
+.bento__title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.bento__item--feature .bento__title {
+  font-size: clamp(1.7rem, 2.6vw, 2.3rem);
+}
+
+.bento__text {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  color: rgba(245, 239, 230, 0.85);
+}
+
+.bento__item:hover .bento__title {
+  color: var(--gold);
+}
+
+/* Numbered steps on a single gold line instead of four separate boxes. */
+.timeline {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.6rem;
+}
+
+.timeline__item {
+  position: relative;
+  padding-top: 3.4rem;
+}
+
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  top: 1.35rem;
+  left: 0;
+  right: -1.6rem;
+  height: 2px;
+  background: var(--line-gold);
+}
+
+.timeline__item:last-child::before {
+  right: 0;
+}
+
+.timeline__num {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border-radius: 50%;
+  background: var(--gold);
+  color: var(--green-ink);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 650;
+}
+
+.timeline h3 {
+  margin-bottom: 0.3rem;
+}
+
+.timeline p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.band--green .timeline p {
+  color: rgba(245, 239, 230, 0.9);
+}
+
+/* Two photographs, the second overlapping the first, for the about band. */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+
+.collage {
+  position: relative;
+  padding: 0 2.6rem 2.6rem 0;
+}
+
+.collage__main {
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
+}
+
+.collage__inset {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 46%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 4px solid var(--cream);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Service area: a wide typographic column beside a panel of town names. */
+.areas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: start;
+}
+
+.areas__panel {
+  border: 1px solid rgba(245, 239, 230, 0.3);
+  border-radius: var(--radius);
+  padding: 1.3rem 1.4rem;
+  background: rgba(255, 251, 246, 0.07);
+}
+
+.area-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.area-list li {
+  background: rgba(255, 251, 246, 0.12);
+  border: 1px solid rgba(245, 239, 230, 0.28);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.95rem;
+}
+
+.review-grid {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: start;
+}
+
+.review {
+  position: relative;
+  margin: 0;
+  padding: 1.4rem 1.3rem 1.2rem;
+}
+
+/* A large quote mark keeps the sample notes from reading as plain cards. */
+.review::before {
+  content: "\201C";
+  position: absolute;
+  top: 0.4rem;
+  right: 1rem;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  line-height: 1;
+  color: rgba(201, 154, 61, 0.35);
+}
+
+.review blockquote {
+  margin: 0;
+}
+
+.review blockquote p {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  line-height: 1.34;
+  color: var(--green-deep);
+}
+
+.stars {
+  margin: 0 0 0.7rem;
+  color: var(--gold-ink);
+  letter-spacing: 0.12em;
+}
+
+.byline,
+.sample-tag {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sample-tag {
+  display: inline-block;
+  margin-bottom: 0.55rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-ink);
+}
+
+/* Closing call to action, again over a photograph. */
+.cta {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(3rem, 7vw, 5.5rem) 0;
+  background: var(--green-ink);
+  color: var(--cream);
+  text-align: center;
+}
+
+.cta__inner {
+  position: relative;
+  max-width: 44rem;
+  margin-inline: auto;
+}
+
+.cta .kicker {
+  justify-content: center;
+  color: var(--gold);
+}
+
+.cta p {
+  color: rgba(245, 239, 230, 0.92);
+}
+
+.cta .cluster {
+  justify-content: center;
+  margin-bottom: 0;
+}
+
+.cta-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* ----------------------------------------------------------- 7. inner pages */
+
+/* Every inner page opens with its own photograph so the pages feel distinct. */
+.page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(2.6rem, 6vw, 4.6rem) 0 clamp(2rem, 4vw, 3rem);
+  background: var(--green-ink);
+  color: var(--cream);
+}
+
+.page-hero__inner {
+  position: relative;
+  max-width: 46rem;
+}
+
+.page-hero .lede {
+  color: rgba(245, 239, 230, 0.92);
+}
+
+.page-hero--plain {
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.page-hero--plain::after {
+  display: none;
+}
+
+.page-hero--plain h1 {
+  color: var(--green-deep);
+}
+
+.page-hero--plain .lede {
+  color: var(--muted);
+}
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: rgba(245, 239, 230, 0.8);
+}
+
+.crumbs a {
+  color: var(--cream);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.crumbs a:hover {
+  color: var(--gold);
+}
+
+.page-hero a:not(.btn) {
+  color: var(--cream);
+  font-weight: 600;
+}
+
+.page-hero--plain a:not(.btn) {
+  color: var(--burgundy-deep);
+}
+
+.page-hero--plain .crumbs {
+  color: var(--muted);
+}
+
+.page-hero--plain .crumbs a {
+  color: var(--burgundy-deep);
+}
+
+/* Quick jump chips above the service rows. */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin-bottom: clamp(1.8rem, 4vw, 3rem);
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--green-deep);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.chip:hover {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--cream);
+}
+
+/* Service rows alternate sides and carry a large outlined numeral. */
+.svc {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.4rem, 4vw, 3.2rem);
+  align-items: center;
+  padding: clamp(2rem, 4vw, 3.2rem) 0;
+  border-top: 1px solid var(--line);
+}
+
+.svc:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.svc__media {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lift);
+}
+
+.svc--flip .svc__media {
+  order: 2;
+}
+
+.svc__body {
+  min-width: 0;
+}
+
+.svc__num {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 5vw, 3.8rem);
+  line-height: 0.9;
+  color: transparent;
+  margin-bottom: 0.4rem;
+  -webkit-text-stroke: 1.5px var(--gold);
+}
+
+.svc h2 {
+  margin-bottom: 0.5rem;
+}
+
+.svc .cluster {
+  margin-bottom: 0;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 1.4rem;
+}
+
+.filters[hidden] {
+  display: none;
+}
+
+.filters button {
+  font: inherit;
+  font-weight: 600;
+  min-height: 2.7rem;
+  padding: 0.35rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--green-deep);
+  cursor: pointer;
+}
+
+.filters button[aria-pressed="true"] {
+  background: var(--green);
+  color: var(--cream);
+  border-color: var(--green);
+}
+
+/* Gallery: two tiles are deliberately taller, so the grid is not a plain
+   three-by-two block. Dense packing closes the gaps when tiles are filtered. */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 11rem;
+  grid-auto-flow: dense;
+  gap: 1rem;
+}
+
+.tile {
+  position: relative;
+  grid-row: span 2;
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  cursor: pointer;
+  border-radius: var(--radius);
+  border: 0;
+  background: var(--green-ink);
+  color: var(--cream);
+  font: inherit;
+  box-shadow: var(--shadow);
+}
+
+.tile--tall {
+  grid-row: span 3;
+}
+
+.tile[hidden] {
+  display: none;
+}
+
+.tile img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tile__meta {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 3.2rem 1rem 1rem;
+  background: linear-gradient(transparent, rgba(20, 33, 22, 0.9) 60%);
+}
+
+.tile__tag {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.tile__title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--cream);
+}
+
+.lightbox {
+  width: min(52rem, calc(100% - 1.5rem));
+  border: 0;
+  padding: 0.8rem;
+  border-radius: 1.2rem;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.lightbox::backdrop {
+  background: rgba(17, 17, 17, 0.72);
+}
+
+.lightbox img {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: cover;
+  border-radius: 0.8rem;
+  background: #111;
+}
+
+.lightbox__bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.7rem 0.2rem 0.2rem;
+}
+
+.lightbox p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(1.4rem, 3vw, 2.5rem);
+  align-items: start;
+}
+
+.info-card__photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.form-card {
+  padding: 1.4rem 1.35rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.form-grid--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.field label,
+.choice,
+.checkline {
+  font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 1rem;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid rgba(49, 91, 53, 0.28);
+  border-radius: 0.8rem;
+  padding: 0.75rem 0.85rem;
+}
+
+.field textarea {
+  min-height: 8.5rem;
+  resize: vertical;
+}
+
+.field input[aria-invalid="true"],
+.field select[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--burgundy);
+}
+
+.hint,
+.field-error,
+.form-status {
+  font-size: 0.92rem;
+}
+
+.hint {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.field-error {
+  color: var(--burgundy-deep);
+  margin: 0;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(49, 91, 53, 0.25);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+}
+
+.choice:has(input:checked) {
+  background: var(--green);
+  color: var(--cream);
+  border-color: var(--green);
+}
+
+.choice input {
+  accent-color: var(--burgundy);
+}
+
+.checkline {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  font-weight: 500;
+}
+
+.checkline input {
+  margin-top: 0.3rem;
+  accent-color: var(--burgundy);
+}
+
+.wizard__steps {
+  display: flex;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0 0 1.3rem;
+}
+
+.wizard__steps li {
+  flex: 1;
+  border-top: 3px solid rgba(49, 91, 53, 0.2);
+  padding-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.wizard__steps .is-current {
+  border-color: var(--burgundy);
+  color: var(--burgundy-deep);
+}
+
+.wizard__steps .is-done {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.wizard__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+legend {
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  color: var(--green-deep);
+  margin-bottom: 0.7rem;
+  padding: 0;
+}
+
+.notice {
+  background: rgba(141, 155, 56, 0.15);
+  border: 1px solid rgba(49, 91, 53, 0.16);
+  border-radius: 0.9rem;
+  padding: 0.8rem 0.9rem;
+}
+
+/* Honeypot stays in the page for bots and off-screen for people. */
+.hp-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.fallback-copy,
+.summary {
+  width: 100%;
+  min-height: 8rem;
+  font: inherit;
+  margin-top: 0.6rem;
+  white-space: pre-wrap;
+}
+
+.summary {
+  background: var(--cream);
+  border-radius: 0.8rem;
+  padding: 0.9rem;
+  min-height: 0;
+}
+
+.faq details {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 0.9rem 1.05rem;
+  margin-bottom: 0.6rem;
+}
+
+.faq summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--green-deep);
+}
+
+.faq details p {
+  margin: 0.6rem 0 0.2rem;
+}
+
+/* ---------------------------------------------------------------- 8. footer */
+
+.site-footer {
+  background: var(--green-ink);
+  color: var(--cream);
+  padding: clamp(2.4rem, 5vw, 3.6rem) 0 1.3rem;
+}
+
+.site-footer a {
+  color: var(--cream);
+  text-decoration: none;
+}
+
+.site-footer a:hover {
+  color: var(--gold);
+}
+
+.footer-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1.5fr 0.8fr 0.8fr;
+}
+
+.site-footer h2 {
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--gold);
+}
+
+.site-footer ul {
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(245, 239, 230, 0.16);
+  font-size: 0.92rem;
+}
+
+.photo-credit {
+  flex-basis: 100%;
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(245, 239, 230, 0.75);
+}
+
+.quick-contact {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 35;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.quick-contact a,
+.mobile-dock a {
+  text-decoration: none;
+}
+
+.quick-contact a {
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: 50%;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(30, 41, 30, 0.2);
+}
+
+.quick-contact__btn--phone {
+  background: var(--burgundy);
+}
+
+.quick-contact__btn--wa {
+  background: #1f7a43;
+}
+
+.mobile-dock {
+  display: none;
+}
+
+/* ------------------------------------------------------- 9. responsive etc. */
+
+@media (max-width: 1080px) {
+  /* Header drops to two rows: brand and quote button, then the page links. */
+  .site-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-bottom: 0.45rem;
+  }
+
+  .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: stretch;
+  }
+
+  .site-nav__list {
+    gap: 0.15rem;
+  }
+
+  .site-nav a {
+    padding: 0.45rem 0.7rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bento__item--feature,
+  .bento__item--wide {
+    grid-column: span 2;
+  }
+
+  .bento__item--feature {
+    grid-row: span 2;
+  }
+
+  .timeline {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-grid,
+  .review-grid,
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .split,
+  .areas,
+  .contact-layout,
+  .svc {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stacked rows always read image first, so the flip order is dropped. */
+  .svc--flip .svc__media {
+    order: 0;
+  }
+
+  .collage {
+    padding: 0 2rem 2rem 0;
+    max-width: 32rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  /* Small screens get their own layout: a cinematic first screen, a
+     full-page menu, snap reels instead of stacked grids, and a floating
+     contact dock. This is not the desktop page with the columns removed. */
+  .utility-bar,
+  .site-nav,
+  .nav-cta,
+  .quick-contact,
+  .hero__badge {
+    display: none;
+  }
+
+  .menu-sheet {
+    display: block;
+  }
+
+  /* backdrop-filter on .top would trap the overlay inside the header. */
+  .top {
+    z-index: 60;
+    backdrop-filter: none;
+  }
+
+  .top:has(.menu-sheet[open]) {
+    background: transparent;
+    box-shadow: none;
+  }
+
+  :root {
+    --header-offset: 5.4rem;
+  }
+
+  .container {
+    width: min(var(--max), calc(100% - 1.7rem));
+  }
+
+  html {
+    overflow-x: clip;
+  }
+
+  .site-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 4.4rem;
+    padding-bottom: 0;
+  }
+
+  .brand__mark {
+    width: 2.7rem;
+    height: 2.7rem;
+  }
+
+  .brand__name {
+    font-size: 1.28rem;
+  }
+
+  body:has(.menu-sheet[open]) {
+    overflow: hidden;
+  }
+
+  h1 {
+    font-size: clamp(2.15rem, 10.2vw, 3.2rem);
+  }
+
+  .hero {
+    min-height: calc(100svh - var(--header-offset) - 5.2rem);
+    padding: 0;
+  }
+
+  .hero::after {
+    background:
+      linear-gradient(to top, rgba(17, 28, 18, 0.96) 0%, rgba(17, 28, 18, 0.55) 42%, rgba(17, 28, 18, 0.12) 72%),
+      linear-gradient(to right, rgba(17, 28, 18, 0.35), transparent 55%);
+  }
+
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: calc(100svh - var(--header-offset) - 5.2rem);
+    padding: 0 0 0.85rem;
+  }
+
+  .hero__copy {
+    max-width: none;
+    min-width: 0;
+    padding-bottom: 0.4rem;
+  }
+
+  .hero__inner,
+  .hero__actions,
+  .page-hero__inner {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hero h1,
+  .page-hero h1 {
+    text-wrap: wrap;
+    max-width: 100%;
+  }
+
+  .hero .lede {
+    font-size: 1.05rem;
+  }
+
+  .hero__actions .btn {
+    flex: 1 1 auto;
+    min-width: 9rem;
+  }
+
+  /* Promises become a swipeable strip on the hero, not a four-cell stack. */
+  .hero__facts {
+    display: flex;
+    gap: 0.7rem;
+    margin: 0.9rem -0.85rem 0;
+    padding: 0 0.85rem 0.2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0.85rem;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border: 0;
+    grid-template-columns: none;
+  }
+
+  .hero__facts .fact {
+    flex: 0 0 min(78vw, 18.5rem);
+    scroll-snap-align: start;
+    border-radius: 1.15rem;
+    background: rgba(23, 43, 27, 0.72);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(245, 239, 230, 0.16);
+  }
+
+  .section {
+    padding: 2.6rem 0;
+  }
+
+  .section__head--split .btn {
+    width: 100%;
+  }
+
+  /* Service mosaic becomes a film-strip of tall posters. */
+  .bento {
+    display: flex;
+    gap: 0.85rem;
+    grid-template-columns: none;
+    grid-auto-rows: auto;
+    margin-inline: -0.85rem;
+    width: calc(100% + 1.7rem);
+    padding: 0.15rem 1.05rem 0.4rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.05rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .bento__item,
+  .bento__item--feature,
+  .bento__item--wide {
+    flex: 0 0 min(82vw, 21.5rem);
+    min-height: 26.5rem;
+    grid-column: auto;
+    grid-row: auto;
+    border-radius: 1.6rem;
+  }
+
+  .bento__item--feature {
+    flex-basis: min(88vw, 24rem);
+    min-height: 32rem;
+  }
+
+  .bento__text {
+    display: block;
+  }
+
+  .timeline {
+    display: flex;
+    gap: 0.85rem;
+    grid-template-columns: none;
+    margin-inline: -0.85rem;
+    width: calc(100% + 1.7rem);
+    padding: 0.1rem 1.05rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.05rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .timeline__item {
+    flex: 0 0 min(78vw, 17.5rem);
+    scroll-snap-align: start;
+    padding: 3.4rem 1.1rem 1.2rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 1.35rem;
+    box-shadow: var(--shadow);
+  }
+
+  .timeline__item::before {
+    display: none;
+  }
+
+  .review-grid {
+    display: flex;
+    gap: 0.85rem;
+    grid-template-columns: none;
+    margin-inline: -0.85rem;
+    width: calc(100% + 1.7rem);
+    padding: 0.1rem 1.05rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.05rem;
+    -webkit-overflow-scrolling: touch;
+    align-items: stretch;
+  }
+
+  .review {
+    flex: 0 0 min(84vw, 20rem);
+    scroll-snap-align: start;
+  }
+
+  .chip-row,
+  .filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    margin-inline: -0.85rem;
+    width: calc(100% + 1.7rem);
+    padding: 0.1rem 1.05rem 0.8rem;
+    scrollbar-width: none;
+  }
+
+  .chip-row::-webkit-scrollbar,
+  .filters::-webkit-scrollbar,
+  .bento::-webkit-scrollbar,
+  .timeline::-webkit-scrollbar,
+  .review-grid::-webkit-scrollbar,
+  .hero__facts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip,
+  .filters button {
+    flex: none;
+    scroll-snap-align: start;
+  }
+
+  .page-hero {
+    min-height: 72svh;
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .page-hero--plain {
+    min-height: 0;
+    display: block;
+  }
+
+  .page-hero::after {
+    background:
+      linear-gradient(to top, rgba(17, 28, 18, 0.94) 0%, rgba(17, 28, 18, 0.4) 55%, rgba(17, 28, 18, 0.1) 100%);
+  }
+
+  /* Service rows become poster-over-copy, always image first. */
+  .svc {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    padding: 2.4rem 0;
+  }
+
+  .svc--flip .svc__media {
+    order: 0;
+  }
+
+  .svc__media {
+    aspect-ratio: 3 / 4;
+    max-height: 68svh;
+    border-radius: 1.7rem;
+  }
+
+  .svc__num {
+    font-size: 3.2rem;
+  }
+
+  .collage {
+    padding: 0 1.8rem 1.8rem 0;
+    max-width: none;
+  }
+
+  .gallery-grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 8.2rem;
+    gap: 0.7rem;
+  }
+
+  .tile:first-child {
+    grid-column: 1 / -1;
+    grid-row: span 4;
+    min-height: 62svh;
+    border-radius: 1.6rem;
+  }
+
+  .card-grid,
+  .footer-grid,
+  .form-grid--two {
+    grid-template-columns: 1fr;
+  }
+
+  .areas__panel {
+    padding: 1rem;
+  }
+
+  /* Floating island, not a full-width slab. */
+  .mobile-dock {
+    position: fixed;
+    left: 0.7rem;
+    right: 0.7rem;
+    bottom: calc(0.55rem + env(safe-area-inset-bottom));
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.35rem;
+    padding: 0.4rem;
+    background: rgba(23, 43, 27, 0.94);
+    border: 1px solid rgba(245, 239, 230, 0.12);
+    border-radius: 1.35rem;
+    box-shadow: 0 16px 40px rgba(17, 28, 18, 0.38);
+    backdrop-filter: blur(16px);
+  }
+
+  .mobile-dock a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 2.75rem;
+    border-radius: 999px;
+    color: var(--cream);
+    font-weight: 650;
+    font-size: 0.9rem;
+  }
+
+  .mobile-dock a:nth-child(1) {
+    background: var(--burgundy);
+  }
+
+  .mobile-dock a:nth-child(2) {
+    background: #1f7a43;
+  }
+
+  .mobile-dock a:nth-child(3) {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  body {
+    padding-bottom: calc(5.4rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (max-width: 680px) {
+  .brand__tag {
+    letter-spacing: 0.08em;
+    font-size: 0.62rem;
+  }
+
+  .collage {
+    padding: 0 1.3rem 1.3rem 0;
+  }
+
+  .hero__actions {
+    flex-direction: column;
+  }
+
+  .hero__actions .btn {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .btn,
+  .chip,
+  .tile,
+  .bento__item,
+  .bento__title,
+  .site-nav a {
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .tile:hover,
+  .bento__item:hover {
+    transform: translateY(-3px);
+  }
+}
+
+@media print {
+  .top,
+  .quick-contact,
+  .mobile-dock,
+  .menu-sheet,
+  .nav-cta,
+  .hero__actions,
+  .wizard__nav,
+  .chip-row,
+  .filters {
+    display: none !important;
+  }
+
+  .hero,
+  .page-hero,
+  .cta,
+  .band--green,
+  .band--burgundy,
+  .site-footer {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .hero__bg,
+  .page-hero__bg,
+  .cta__bg,
+  .hero::after,
+  .page-hero::after,
+  .cta::after {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+    padding: 0;
+  }
+
+  .wizard__panel {
+    display: block !important;
+  }
+}
